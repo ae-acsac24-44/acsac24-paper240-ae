@@ -95,7 +95,7 @@ This section introduces the registration process to access two physical Arm mach
 Please sign up in cloud.us: https://www.cloudlab.us/signup.php to be able to access machines. Join the existing project: NTUCSIE, and we will receive a notification automatically and we will let you in.
 To ensure anonymity, please use "ACSAC24 AE #nonce" for full name, a one-time email address, and random information in other fields.
 #### 2.2.2 Cloudlab profiles
-Use the `m400-v4.18-ubuntu-20.04` profile for running experiments. Please be patient and wait for the machines to setup and boot.
+Start a new experiment by selecting `Start Experiment`. Use the `m400-v4.18-ubuntu-20.04` profile for running experiments. Please be patient and wait for the machines to setup and boot.
 
 Once your machines are ready, you can login either via ssh or the UI interface. You have root access without password. You need to switch to root by:
 ```
