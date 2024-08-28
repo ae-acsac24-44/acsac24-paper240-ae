@@ -157,7 +157,7 @@ To run VM benchmarks on SECvma:
 ### 2.7 SECvma Configuration
 First, sync from the remote to fetch the kernel source.
 ```
-cd /mydata/acsac-papar240-ae
+cd /mydata/acsac24-paper240-ae/
 git submodule update --init linux
 ```
 Please wait for a few minutes for the clone to complete. You will then see the source code in the `linux/` directory.
