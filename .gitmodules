@@ -3,4 +3,4 @@
 	url = https://github.com/VeriGu/vct-qemu.git
 [submodule "linux"]
 	path = linux
-	url = git@github-ae.com:ae-acsac24-44/acsac24-ae-linux.git
+	url = https://github.com/ae-acsac24-44/acsac24-ae-linux.git
