@@ -16,7 +16,7 @@ systemctl restart sshd
 sleep 1
 
 echo "Installing package..."
-apt install make flex bison
+apt install -y make flex bison
 
 echo "Install apache server"
 which apache2 > /dev/null
