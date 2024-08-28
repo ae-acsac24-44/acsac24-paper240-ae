@@ -313,7 +313,7 @@ For instance, to run apache/netperf/memcached, do the following:
 ./{apache|netperf|memcached}.sh $SERVER_IP
 ```
 
-Place the application workload (e.g., `apache`, `netperf`, `memcached`) that you want to run.
+Place the application workload (e.g., `apache`, `netperf`, `memcached`) that you want to run, and replace `$SERVER_IP` with the IP address of the server.
 
 The results will be stored at `scripts/client/{bm|vm}/{apache|netperf|memcached}.txt`.
 
