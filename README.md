@@ -291,6 +291,8 @@ This section provides instructions for running application benchmarks as detaile
 
 After all required packages are installed on the client, you can then run the benchmark from the client machine using the respective script. Note that for VM benchmarks, ensure you have completed the installation in [Environment Configuration for VM](#284-environment-configuration-for-virtual-machine).
 
+Running the following command in your **client** machine:
+
 ```
 cd /mydata/acsac24-paper240-ae/scripts/client/{bm|vm}
 ```
