@@ -1,0 +1,12 @@
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    enp0s2:
+      dhcp4: false
+      dhcp6: false
+      addresses:
+      - 10.10.1.100/24
+      routes:
+      - to: default
+        via: 10.10.1.255

@@ -1,0 +1,5 @@
+setenv bootargs "console=ttyS0,${baudrate}n8r ro root=/dev/sda1 irqchip.gicv2_force_probe=1"
+setenv verify no
+load scsi 0 ${kernel_addr_r} uImage
+load scsi 0 ${ramdisk_addr_r} uInitrd
+bootm ${kernel_addr_r} ${ramdisk_addr_r} ${fdt_addr_r}

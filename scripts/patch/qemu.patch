@@ -1,0 +1,26 @@
+diff --git a/.gitmodules b/.gitmodules
+index d108478e0a..2be8de5516 100644
+--- a/.gitmodules
++++ b/.gitmodules
+@@ -21,7 +21,7 @@
+ 	url = git://git.qemu-project.org/sgabios.git
+ [submodule "dtc"]
+ 	path = dtc
+-	url = git://git.qemu-project.org/dtc.git
++	url = https://gitlab.com/qemu-project/dtc.git
+ [submodule "roms/u-boot"]
+ 	path = roms/u-boot
+ 	url = git://git.qemu-project.org/u-boot.git
+@@ -33,10 +33,10 @@
+ 	url = git://git.qemu.org/QemuMacDrivers.git
+ [submodule "ui/keycodemapdb"]
+ 	path = ui/keycodemapdb
+-	url = git://git.qemu.org/keycodemapdb.git
++	url = https://gitlab.com/qemu-project/keycodemapdb.git
+ [submodule "capstone"]
+ 	path = capstone
+-	url = git://git.qemu.org/capstone.git
++	url = https://gitlab.com/qemu-project/capstone.git
+ [submodule "roms/seabios-hppa"]
+ 	path = roms/seabios-hppa
+ 	url = git://github.com/hdeller/seabios-hppa.git
