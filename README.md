@@ -87,7 +87,7 @@ This section introduces the registration process to access two physical Arm mach
 
 ### 2.1 Prerequisites
 
-* We leverage [Cloudlab.us](https://www.cloudlab.us/) which provides machines and preconfigured profiles. Machines will be available upon request for artifact evaluation. See [Instructions for Cloudlab](#22-instructions-for-cloudlab). For our profile, we include two physical Arm machines (server/client) connected by <em>private</em> network.
+* We leverage [Cloudlab.us](https://www.cloudlab.us/) which provides machines and preconfigured profiles. Machines will be available upon request for artifact evaluation. See [Instructions for Cloudlab](#22-instructions-for-cloudlab). For our profile, we include two physical Arm machines (server/client) connected by _private_ network.
   
 ### 2.2 Instructions for Cloudlab
 
@@ -299,6 +299,12 @@ cd /mydata/acsac24-paper240-ae/scripts/client/{bm|vm}
 
 Run the scripts located in the `bm/` directory on the client machine for bare-metal benchmarks, and use the `vm/` directory for VM benchmarks.
 
+You can check the server's IP address (typically `10.10.1.1` in bare-metal or `10.10.1.100` for a virtual machine) using the following command:
+```
+ip a
+```
+**Please run application benchmarks over the private network that using the IP address range `10.10.1.*`**.
+
 #### 3.2.1 Apache/Netperf/Memcached
 For instance, to run apache/netperf/memcached, do the following:
 
@@ -307,10 +313,7 @@ For instance, to run apache/netperf/memcached, do the following:
 ./{apache|netperf|memcached}.sh $SERVER_IP
 ```
 
-Place the application workload (e.g., `apache`, `netperf`, `memcached`) that you want to run, and replace `$SERVER_IP` with the IP address of the server (typically `10.10.1.1` in bare-metal or `10.10.1.100` on a virtual machine). You can check the server's IP address using the following command:
-```
-ip a
-```
+Place the application workload (e.g., `apache`, `netperf`, `memcached`) that you want to run.
 
 The results will be stored at `scripts/client/{bm|vm}/{apache|netperf|memcached}.txt`.
 
