@@ -330,6 +330,8 @@ After hackbench/kernbench is done, you can download the result from the server:
 ```
 The result will be stored at `scripts/client/{bm|vm}/{hack|kern}bench.txt`.
 
+**Note: You can rename the result when you are trying to change different [server configuration](#26-server-configuration) and make a comparison.**
+
 ## 4. Module Evaluation
 In this section, we provide instructions for evaluating kernel modules in **server machine** as detailed in Section 6 of the paper.
 
