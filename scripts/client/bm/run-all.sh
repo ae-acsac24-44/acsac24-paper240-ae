@@ -1,12 +1,53 @@
 #!/bin/bash
 
 SRV=$1
-TEST=${2-all}
+TEST="all"
 RES="results"
-LOG="log"
 RESFILE=""
+OUTPUT=""
+REPTS=0
+LOG="log"
 cnt=0
-REPTS=${3-0}
+
+usage() {
+    echo "Usage: $0 SERVER_IP [-t hackbench|kernbench|netperf|apache|memcached] [-n repts] [-o output]"
+	exit 1
+}
+
+if [ -z "$SRV" ]; then
+	usage
+	exit
+fi
+
+shift
+while [[ $# -gt 0 ]]; do
+	case "$1" in
+    	-n)
+            if [[ "$2" =~ ^[0-9]+$ ]]; then
+                REPTS=$2
+				shift 2
+            else
+				echo "Error: Repetitions should be a positive integer"
+				usage
+            fi
+            ;;
+        -o)
+            OUTPUT=$2
+			shift 2
+            ;;
+        -t)
+            TEST=$2
+			shift 2
+            ;;
+        -*)
+			echo "Error: Unknown option: $1" >&2
+            usage
+            ;;
+        *)
+            usage
+            ;;
+    esac
+done
 
 avg() {
     local input="$1"
@@ -21,6 +62,7 @@ avg() {
 	fi
     done < "$input"
 
+    # Calculate and print the average
     if [ "$count" -gt 0 ]; then
         average=$(echo "scale=4; $sum / $count" | bc)
         echo "Average: $average" >> $output
@@ -29,7 +71,11 @@ avg() {
 
 run_netperf() {
 	echo "Running netperf performance of $SRV"
-	LOGFILE="$LOG/netperf_log.$cnt"
+	if [[ -z "$OUTPUT" ]]; then
+		LOGFILE="$LOG/netperf_log.$cnt"
+	else
+		LOGFILE="$LOG/netperf_log.$OUTPUT"
+	fi
 	echo "The raw benchmark data will be stored in $LOGFILE."
 
 	./prep-netperf.sh $SRV
@@ -54,7 +100,11 @@ run_netperf() {
 
 run_apache() {
 	echo "Running apache performance of $SRV"
-	LOGFILE="$LOG/apache_log.$cnt"
+	if [[ -z "$OUTPUT" ]]; then
+		LOGFILE="$LOG/apache_log.$cnt"
+	else
+		LOGFILE="$LOG/apache_log.$OUTPUT"
+	fi
 	echo "The raw benchmark data will be stored in $LOGFILE."
 
 	./prep-apache.sh $SRV
@@ -73,7 +123,11 @@ run_apache() {
 
 run_memcached() {
 	echo "Running memcached performance of $SRV"
-	LOGFILE="$LOG/memcached_log.$cnt"
+	if [[ -z "$OUTPUT" ]]; then
+		LOGFILE="$LOG/memcached_log.$cnt"
+	else
+		LOGFILE="$LOG/memcached_log.$OUTPUT"
+	fi
 	echo "The raw benchmark data will be stored in $LOGFILE."
 	
 	./prep-memcached.sh $SRV
@@ -94,7 +148,11 @@ run_memcached() {
 
 run_hackbench() {
 	echo "Running hackbench performance of $SRV"
-	LOGFILE="$LOG/hackbench_log.$cnt"
+	if [[ -z "$OUTPUT" ]]; then
+		LOGFILE="$LOG/hackbench_log.$cnt"
+	else
+		LOGFILE="$LOG/hackbench_log.$OUTPUT"
+	fi
 	echo "The raw benchmark data will be stored in $LOGFILE."
 
 	./hack.sh $SRV | tee -a $LOGFILE 2>/dev/null
@@ -107,7 +165,11 @@ run_hackbench() {
 
 run_kernbench() {
 	echo "Running kernbench performance of $SRV"
-	LOGFILE="$LOG/kernbench_log.$cnt"
+	if [[ -z "$OUTPUT" ]]; then
+		LOGFILE="$LOG/kernbench_log.$cnt"
+	else
+		LOGFILE="$LOG/kernbench_log.$OUTPUT"
+	fi
 	echo "The raw benchmark data will be stored in $LOGFILE."
 
 	./kern.sh $SRV | tee -a $LOGFILE 2>/dev/null
@@ -126,11 +188,6 @@ run_all() {
 	run_memcached
 }
 
-if [ -z "$SRV" ]; then
-    	echo "Usage: $0 SERVER_IP [all|hackbench|kernbench|netperf|apache|memcached]"
-	exit
-fi
-
 if [ ! -d $RES ]; then
 	mkdir $RES
 fi
@@ -139,16 +196,20 @@ if [ ! -d $LOG ]; then
 	mkdir $LOG
 fi
 
-for file in "$RES"/benchmark_results.*; do
-	if [[ "$file" =~ benchmark_results\.([0-9]+)$ ]]; then
-        num="${BASH_REMATCH[1]}"
-        if [ "$num" -ge "$cnt" ]; then
-            cnt=$((num + 1))
-        fi
-    fi
-done
+if [[ -z $OUTPUT ]]; then
+	for file in "$RES"/benchmark_results.*; do
+		if [[ "$file" =~ benchmark_results\.([0-9]+)$ ]]; then
+        	num="${BASH_REMATCH[1]}"
+        	if [ "$num" -ge "$cnt" ]; then
+            	cnt=$((num + 1))
+        	fi
+    	fi
+	done
+	RESFILE="$RES/benchmark_results.$cnt"
+else
+	RESFILE="$RES/$OUTPUT"
+fi
 
-RESFILE="$RES/benchmark_results.$cnt"
 echo "The benchmark result will be stored at $RESFILE."
 
 if [ "$TEST" == "all" ]; then
@@ -156,11 +217,11 @@ if [ "$TEST" == "all" ]; then
     echo ""
     run_all
 else
-    benchmark="run_$2"
+    benchmark="run_$TEST"
     
     if declare -f "$benchmark" > /dev/null; then
         $benchmark
     else
-        echo "Usage: $0 SERVER_IP [all|hackbench|kernbench|netperf|apache|memcached]"
+		usage
     fi
 fi

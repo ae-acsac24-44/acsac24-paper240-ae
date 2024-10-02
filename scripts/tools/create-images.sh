@@ -6,7 +6,7 @@ TMP_DIR=$(mktemp -d --tmpdir=.)
 # temp file for modifying /etc/passwd in the image
 TMP_FILE=$(mktemp --tmpdir=.)
 
-IMG_NAME=/mydata/cloud.img
+IMG_NAME=${1-/mydata/cloud.img}
 
 SERVER=ubuntu-20.04-server-cloudimg-arm64-root.tar.xz
 if [ ! -e $SERVER ];then
