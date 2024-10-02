@@ -196,6 +196,14 @@ As detailed in Section 7 in the paper, SECvma uses _OPT-SECvma (4KB MEM mappings
 ### 2.4 Client Configuration
 You can run the experiments to measure application workloads on the server machine (i.e., **bare-metal** machine and **virtual machines**). In contrast, the client machine sends workloads to the server machine over the network.
 
+Before you begin, use `sudo su` to switch to the root user and clone the artifact repository to the dedicated SSD mounted at `/mydata`:
+```
+sudo su
+cd /mydata
+git clone https://github.com/ae-acsac24-44/acsac24-paper240-ae.git
+cd acsac24-paper240-ae
+```
+
 Run the following command **on the client machine** to automatically install all the applications for the performance evaluation on the client machine.
 ```
 cd /mydata/acsac24-paper240-ae/scripts/client
