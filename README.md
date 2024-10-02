@@ -8,46 +8,27 @@ This artifact includes SECvma, our Linux kernel protection framework for Arm-bas
     - [1.2 Dynamic Module Loader](#12-dynamic-module-loader)
     - [1.3 Systems Registers Protection](#13-systems-registers-protection)
   - [2. Environment Configuration](#2-environment-configuration)
-    - [2.1 Prerequisites](#21-prerequisites)
-    - [2.2 Instructions for Cloudlab](#22-instructions-for-cloudlab)
-      - [2.2.1 Joining Cloudlab](#221-joining-cloudlab)
-      - [2.2.2 Cloudlab profiles](#222-cloudlab-profiles)
-    - [2.3 Overview](#23-overview)
-    - [2.4 Basic Preparation](#24-basic-preparation)
-      - [2.4.1 Clone the Artifact Repo](#241-clone-the-artifact-repo)
-    - [2.5 Client Configuration](#25-client-configuration)
-    - [2.6 Server Configuration](#26-server-configuration)
-      - [2.6.1 Bare-Metal Linux v4.18](#261-bare-metal-linux-v418)
-      - [2.6.2 VM on mainline KVM](#262-vm-on-mainline-kvm)
-      - [2.6.3 Bare-Metal SECvma](#263-bare-metal-secvma)
-      - [2.6.4 VM on SECvma](#264-vm-on-secvma)
-    - [2.7 SECvma Configuration](#27-secvma-configuration)
-      - [2.7.1 SECvma Configuration & Compilation](#271-secvma-configuration--compilation)
-      - [2.7.2 SECvma Installation](#272-secvma-installation)
-      - [2.7.3 OPT-SECvma (4KB MEM mappings) configuration (Optional)](#273-opt-secvma-4kb-mem-mappings-configuration-optional)
-    - [2.8 VM Configuration](#28-vm-configuration)
-      - [2.8.1 Create the VM Image](#281-create-the-vm-image)
-      - [2.8.2 QEMU Configuration](#282-qemu-configuration)
-        - [2.8.2.1 QEMU compilation for KVM](#2821-qemu-compilation-for-kvm)
-        - [2.8.2.2 QEMU compilation for SECvma](#2822-qemu-compilation-for-secvma)
-      - [2.8.3 Running a Virtual Machine](#283-running-a-virtual-machine)
-      - [2.8.4 Environment Configuration for Virtual Machine](#284-environment-configuration-for-virtual-machine)
-      - [2.8.5 Terminating a Virtual Machine](#285-terminating-a-virtual-machine)
+    - [2.1 Overview](#21-overview)
+    - [2.2 Server Configuration](#22-server-configuration)
+      - [2.2.1 Bare-Metal Linux v4.18](#221-bare-metal-linux-v418)
+      - [2.2.2 VM on mainline KVM](#222-vm-on-mainline-kvm)
+      - [2.2.3 Bare-Metal SECvma](#223-bare-metal-secvma)
+      - [2.2.4 VM on SECvma](#224-vm-on-secvma)
+    - [2.3 VM Configuration](#23-vm-configuration)
+    - [2.4 Client Configuration](#24-client-configuration)
+      
   - [3. Performance Evaluation](#3-performance-evaluation)
     - [3.1 Overview](#31-overview)
     - [3.2 Running Application Benchmarks and Collect Results](#32-running-application-benchmarks-and-collect-results)
       - [3.2.1 Running All Benchmarks](#321-running-all-benchmarks)
-        - [3.2.1.1 Repetitions for Network Benchmarks (Optional)](#3211-repetitions-for-network-benchmarks-optional)
       - [3.2.2 Running a Specific Benchmark](#322-running-a-specific-benchmark)
       - [3.2.3 Collecting Raw Results (Optional)](#323-collecting-raw-results-optional)
       - [3.2.4 Normalized the Results against Baseline](#324-normalized-the-results-against-baseline)
   - [4. Module Evaluation](#4-module-evaluation)
     - [4.1 Overview](#41-overview)
-    - [4.2 Install crypto_virtio Module and Collect the Result](#42-install-crypto_virtio-module-and-collect-the-result)
-    - [4.3 Install xfs Module and Collect the Result](#43-install-xfs-module-and-collect-the-result)
-    - [4.4 Uninstall a Module and Collect the Result](#44-uninstall-a-module-and-collect-the-result)
-    - [4.5 Signing a Kernel Module](#45-signing-a-kernel-module)
-    - [4.6 Install the Signature in SECvma (Optional)](#46-install-the-signature-in-secvma-optional)
+    - [4.2 Install and Uninstall Module and Collect the Result](#42-install-and-uninstall-module-and-collect-the-result)
+    - [4.3 Signing a Kernel Module](#43-signing-a-kernel-module)
+    - [4.4 Install the Signature in SECvma (Optional)](#44-install-the-signature-in-secvma-optional)
   - [5. Software/Hardware Requirements](#5-softwarehardware-requirements)
 
 ## 1. SECvma Architecture
@@ -89,47 +70,127 @@ SECvma provides Linux kernel protection with three security components, as detai
 ## 2. Environment Configuration
 This section introduces the registration process to access two physical Arm machines, along with instructions for configuring the necessary environments on both the server and client machines.
 
-### 2.1 Prerequisites
+### 2.1 Overview
 
-* We leverage [Cloudlab.us](https://www.cloudlab.us/) which provides machines and preconfigured profiles. Machines will be available upon request for artifact evaluation. See [Instructions for Cloudlab](#22-instructions-for-cloudlab). For our profile, we include two physical Arm machines (server/client) connected by _private_ network.
+We leverage [Cloudlab.us](https://www.cloudlab.us/) which provides machines and preconfigured profiles. Machines will be available upon request for artifact evaluation. See [Instructions for Cloudlab](#22-instructions-for-cloudlab). For our profile, we include two physical Arm machines (server/client) connected by _private_ network.
   
-### 2.2 Instructions for Cloudlab
-
-#### 2.2.1 Joining Cloudlab
-Please sign up in cloud.us: https://www.cloudlab.us/signup.php to be able to access machines. Join the existing project: NTUCSIE, and we will receive a notification automatically and we will let you in.
-To ensure anonymity, please use "ACSAC24 AE #nonce" for full name, a one-time email address, and random information in other fields.
-#### 2.2.2 Cloudlab profiles
+1. **Joining Cloudlab**
+Please sign up in [cloud.us](https://www.cloudlab.us/signup.php) to be able to access machines. Join the existing project: **NTUCSIE**, and we will receive a notification automatically and we will let you in.
+    - To ensure anonymity, please use "ACSAC24 AE #nonce" for full name, a one-time email address, and random information in other fields.
+2. **Cloudlab profiles**
 Start a new experiment by selecting `Start Experiment`. Use the `m400-v4.18-ubuntu-20.04` profile for running experiments. Please be patient and wait for the machines to setup and boot.
 
-Once your machines are ready, you can login either via ssh or the UI interface. You have root access without password. You need to switch to root by:
-```
-sudo su
-```
 
-### 2.3 Overview
 In this artifact, we present four configurations for evaluating performance on a server machine: 
 - Bare-metal Linux v4.18
 - Bare-metal SECvma
 - VM on mainline KVM
 - VM on SECvma
 
-Before proceeding, you need to do the [basic preparation](#24-basic-preparation) to run various scripts and compile the source code. Since Linux v4.18 is pre-installed on both the server and client machines, we recommend starting with application performance measurement on bare-metal Linux v4.18, followed by VM on mainline KVM.
+For VMs, additional [VM configurations](#23-vm-configuration) will be necessary. Before [running application benchmarks](#32-running-application-benchmarks-and-collect-results) ensure you have followed [client configuration](#24-client-configuration) to set up your client machine. Note that you are only required set up your client **once**. 
 
-### 2.4 Basic Preparation
-Note that all the commands other than this `git clone` command need to be executed in the directory in which this repo is cloned.
+**Note: Linux v4.18 is pre-installed on both the server and client machines; we recommend starting with application performance measurement on bare-metal Linux v4.18, followed by VM on mainline KVM.**
+
+### 2.2 Server Configuration
+We provide automated scripts to set up different profiles on the server. Please follow one of the profiles to configure your server.
+
+Before you begin, use `sudo su` to switch to the root user and clone the artifact repository to the dedicated SSD mounted at `/mydata`:
 ```
 sudo su
-```
-
-#### 2.4.1 Clone the Artifact Repo
-Clone this repository on both machines as a **root** user to a dedicated SSD mounted to `mydata`. 
-```
 cd /mydata
 git clone https://github.com/ae-acsac24-44/acsac24-paper240-ae.git
 cd acsac24-paper240-ae
 ```
 
-### 2.5 Client Configuration
+- Alternatively, if you prefer to manually set up **Bare-metal SECvma** and **VM on SECvma** on Arm machines, you can refer to the installation instructions in [SECvma.md](SECvma.md).
+
+#### 2.2.1 Bare-Metal Linux v4.18
+Linux v4.18 is pre-installed. Proceed to [Client Configuration](#23-client-configuration).
+
+#### 2.2.2 VM on mainline KVM
+To run virtual machines on KVM, please follow these steps:
+
+1. Prepare the VM image and configure QEMU by running:
+    ```
+    cd /mydata/acsac24-paper240-ae/scripts/tools/
+    ./kvm-setup.sh
+    ```
+    
+2. Proceed to [VM Configuration](#23-vm-configuration).
+
+
+#### 2.2.3 Bare-Metal SECvma
+To configure SECvma, please follow these steps:
+
+1. Configure and compile SECvma by running:
+    ```
+    cd /mydata/acsac24-paper240-ae/scripts/tools/
+    ./secvma-setup.sh
+    ```
+    Please wait for a few minutes for the linux source to be cloned and compiled.
+
+2. Reboot the system by running:
+    ```
+    reboot
+    ```
+    Each time after reboot, run `sudo su`.
+    
+3. Proceed to [Client Configuration](#24-client-configuration).
+
+#### 2.2.4 VM on SECvma
+As detailed in Section 7 in the paper, SECvma uses _OPT-SECvma (4KB MEM mappings)_ when running confidential VMs. To run virtual machines on SECvma, please follow these steps:
+
+1. Re-configure SECvma with _4KB MEM mappings_ by running:
+    ```
+    cd /mydata/acsac24-paper240-ae/scripts/tools/
+    ./secvma-4kb-setup.sh
+    ```
+2. Reboot the system by running:
+    ```
+    reboot
+    ```
+    Each time after reboot, run `sudo su`.
+    
+3. Setup QEMU with SeKVM support. Clone and configure the QEMU source from their work by running:
+    ```
+    cd /mydata/acsac24-paper240-ae/scripts/tools/
+    ./sekvm-setup.sh
+    ```
+4. Proceed to [VM Configuration](#23-vm-configuration).
+
+### 2.3 VM Configuration
+1. Running a virtual machine:
+     - To run a **VM on mainline KVM**:
+        ```
+        cd /mydata/acsac24-paper240-ae/scripts/tests/
+        ./run-guest-kvm.sh
+        ```
+        Note: KVM can only run before SECvma is installed.
+    - To run a **VM on SECvma**:
+        ```
+        cd /mydata/acsac24-paper240-ae/scripts/tests/
+        ./run-guest-sekvm.sh
+        ```
+        Note: Ensure that SECvma with VM support is installed (See [VM on SECvma](#224-vm-on-secvma)).
+2. Log in with the `root` user; no password is required. If you experience a delay, press `Ctrl+C` to login.
+    ```
+    ...
+    Ubuntu 20.04.6 LTS ubuntu ttyAMA0
+
+    ubuntu login: root
+    ```
+3. Once log in, you will see the `./vm-install.sh` script is already installed in the root directory of your VM. Execute the `./vm-install.sh` script on the VM to configure SSH and install required applications for performance evaluation in the VM.
+    ```
+    [VM ~] # ./vm-install.sh
+    ```
+    Press `Enter` when prompted to generate the SSH key. If the key is already created, this step will be skipped. 
+
+4. To terminate a virtual machine after the measurement. Run `halt -p` command iteratively inside virtual machines  running **on the server** until you get the server shell.
+    ```
+    [VM ~] # halt -p
+    ```
+    
+### 2.4 Client Configuration
 You can run the experiments to measure application workloads on the server machine (i.e., **bare-metal** machine and **virtual machines**). In contrast, the client machine sends workloads to the server machine over the network.
 
 Run the following command **on the client machine** to automatically install all the applications for the performance evaluation on the client machine.
@@ -139,186 +200,62 @@ cd /mydata/acsac24-paper240-ae/scripts/client
 ```
 This is required for the client machine and only needs to be done **once**.
 
-### 2.6 Server Configuration
-Before proceeding, please make sure both [Basic Preparation](#24-basic-preparation) and [Client Configuration](#25-client-configuration) are completed. The following provides an overview of instructions for configuring your server for different setups, please follow one of the setups and proceed to [Performance Evaluation](#3-performance-evaluation).
-
-#### 2.6.1 Bare-Metal Linux v4.18
-No additional setup is needed.
-
-#### 2.6.2 VM on mainline KVM
-Compile QEMU and launch the VM as outlined in [VM Configuration](#28-vm-configuration).
-
-#### 2.6.3 Bare-Metal SECvma
-Configure your server for SECvma by following the [SECvma Configuration](#27-secvma-configuration).
-
-#### 2.6.4 VM on SECvma
-To run VM benchmarks on SECvma:
-1. Switch to the [OPT-SECvma (4KB MEM Mappings)](#273-opt-secvma-4kb-mem-mappings-configuration-optional) configuration.
-2. Recompile the kernel and reboot your server.
-3. Compile QEMU with SECvma support as detailed in [QEMU Compilation for SECvma](#2822-qemu-compilation-for-secvma).
-4. Launch the VM using the image created for mainline KVM if available.
-
-### 2.7 SECvma Configuration
-First, sync from the remote to fetch the kernel source.
-```
-cd /mydata/acsac24-paper240-ae/
-git submodule update --init linux
-```
-Please wait for a few minutes for the clone to complete. You will then see the source code in the `linux/` directory.
-
-#### 2.7.1 SECvma Configuration & Compilation
-The following commands will configure and compile SECvma.
-```
-cd linux
-make secvma_defconfig
-make -j8
-make modules_install
-make install
-```
-
-#### 2.7.2 SECvma Installation
-The following commands will install the newly compiled SECvma binary to your boot partition, so u-boot can load and boot SECvma on the hardware.
-```
-cd /mydata/acsac24-paper240-ae/scripts/tools/
-./install-kernel.sh
-reboot
-```
-Each time after reboot, run `sudo su`.
-
-**Note: If you wish to switch back to vanilla Linux v4.18, run `./restore-kernel.sh` in `tools/` and reboot your system.**
-
-#### 2.7.3 OPT-SECvma (4KB MEM mappings) configuration (Optional)
-By default, the kernel source of SECvma is configured for optimized performance (_OPT-SECvma (huge MEM mappings)_ in Section 6 of the paper). However, as detailed in Section 7, SECvma uses _OPT-SECvma (4KB MEM mappings)_ when running confidential VMs. 
-
-To apply this configuration, run the following command to switch to the target branch in the source artifact and recompile the kernel.
-```
-cd linux
-git checkout secvma-4kb-mem
-make -j8
-make modules_install
-make install
-```
-We have provided a diff [patch](scripts/patch/secvma-4kb.patch) between these two configurations.
-
-To return to the original branch (_OPT-SECvma (huge MEM mappings)_), use the following command:
-```
-git checkout master
-```
-
-### 2.8 VM Configuration
-SECvma retains most of the SeKVM modules related to VMs unmodified. To run VMs with SECvma, you can spin up and tear down VMs in the same way as with SeKVM. The following instructions will show the ways to run VMs on **KVM** and **SECvma**.
-
-#### 2.8.1 Create the VM Image
-To create the image, on the server, run
-```
-cd /mydata/acsac24-paper240-ae/scripts/tools/
-./create-images.sh
-```
-The image will be created under `/mydata/cloud.img`. 
-
-
-#### 2.8.2 QEMU Configuration
-##### 2.8.2.1 QEMU compilation for KVM
-You will be able to run KVM on the server after the compilation is finished. See here for [instructions to run VMs on KVM](#283-running-a-virtual-machine). Note that KVM can only run before SECvma is installed.
-```
-cd /srv/vm/qemu
-./configure --target-list=aarch64-softmmu --disable-werror
-make -j8
-```
-
-#### 2.8.2.2 QEMU compilation for SECvma
-To run VMs with SECvma, as with SeKVM, you will first have to compile QEMU from the source code from their work to support SeKVM.
-
-Download the QEMU source from the repo below and configure the environment.
-```
-cd /mydata/acsac24-paper240-ae/
-git submodule update --init qemu
-```
-Wait for a moment for the clone to complete, then do the following. Before compilation, you need to apply the [patch](/scripts/patch/qemu.patch) we provided, as some submodule links are outdated.
-
-```
-cd qemu
-./configure --target-list=aarch64-softmmu --disable-werror
-git apply ../scripts/patch/qemu.patch
-git submodule sync
-make -j8
-```
-
-#### 2.8.3 Running a Virtual Machine
-To run virtual machines, please go to the directory `acsac24-paper240-ae/scripts/tests/`.
-```
-cd /mydata/acsac24-paper240-ae/scripts/tests/
-```
-
-Run `net.sh` to create a virtual bridge to a network interface connecting the client machine. You only need to run it **once** whenever you (re)boot the host machine. You do not need to run it every time you boot the VM.
-```
-../tools/net.sh
-```
-
-You can run the VM on SECvma using the following command.
-```
-./run-guest-sekvm.sh
-```
-You can replace `run-guest-sekvm.sh` with `run-guest-kvm.sh` to run the VM in KVM, if SECvma has not been installed and booted.
-
-Finally, log in with the `root` user; no password is required. If you experience a delay, press `Ctrl+C` to login.
-```
-...
-Ubuntu 20.04.6 LTS ubuntu ttyAMA0
-
-ubuntu login: root
-```
-
-#### 2.8.4 Environment Configuration for Virtual Machine
-Run the following commands for **VM performance workload**. After spinning up the VM on the server, you will see the `./vm-install.sh` file installed in the root directory of your VM. Execute the script to configure SSH and install required applications for performance evaluation in the VM.
-```
-chmod 700 vm-install.sh
-./vm-install.sh
-```
-Press `Enter` when prompted to generate the SSH key.
-
-#### 2.8.5 Terminating a Virtual Machine
-
-After the experiment, you need to terminate a virtual machine. Run `halt -p` command iteratively inside virtual machines  running **on the server** until you get the server shell.
-```
-[VM ~] # halt -p
-```
 
 ## 3. Performance Evaluation
-This section provides instructions for running application benchmarks as detailed in Section 6 of the paper.
-### 3.1 Overview
- We offer scripts for testing both **bare metal** and **virtual machine** using either the vanilla kernel or SECvma. 
+This section provides instructions for running application benchmarks, as detailed in Section 6 of the paper.
 
-**Note: Please ensure that both your client and server machines (with your preferred configuration, See [Client Configuration](#25-client-configuration), [Server Configuration](#26-server-configuration))  are configured accordingly before running application benchmarks.**
+### 3.1 Overview
+We offer scripts for testing both **bare metal** and **virtual machine** using either the vanilla kernel or SECvma. The table below summarizes the server configurations along with the corresponding metrics used in paper:
+|  [Server Configuration](#22-server-configuration) | Metric Used in Paper (Figure 6 & 7) |
+| -------- | ------- |
+| [Bare-Metal linux v4.18](#221-bare-metal-linux-v4.18) | Baseline for normalization of bare-metal results |
+| [VM on mainline KVM](#222-vm-on-mainline-kvm) | Baseline for normalization of VM results |
+| [Bare-Metal SECvma](#223-bare-metal-secvma)| _OPT-SECvma (huge MEM mappings)_|
+| [VM on SECvma](#224-vm-on-secvma) | _OPT-SECvma (4KB MEM mappings)_ |
+
+**Note: Before running the applications benchmarks, please ensure that both your client and server machines (with your preferred configuration, See [Client Configuration](#25-client-configuration), [Server Configuration](#23-server-configuration))  are configured accordingly. If you are evaluating a VM, make sure the VM is spinning up, see [VM Configuration](#24-vm-configuration)**.
 
 ### 3.2 Running Application Benchmarks and Collect Results
 
-After all required packages are installed on the client, you can then run the benchmark from the client machine using the respective script. Note that for VM benchmarks, ensure you have completed the installation in [Environment Configuration for VM](#284-environment-configuration-for-virtual-machine).
+After all required packages are installed on the client, you can then run the benchmark from the client machine using the respective script.
 
-Running the following command in your **client** machine:
+1. Running the following command in your **client** machine:
 
-```
-cd /mydata/acsac24-paper240-ae/scripts/client/{bm|vm}
-```
+    ```
+    cd /mydata/acsac24-paper240-ae/scripts/client/{bm|vm}
+    ```
 
-Run the scripts located in the `bm/` directory on the client machine for bare-metal benchmarks, and use the `vm/` directory for VM benchmarks.
+    Run the scripts located in the `bm/` directory on the client machine for bare-metal benchmarks, and use the `vm/` directory for VM benchmarks.
 
-You can check the server's IP address (typically `10.10.1.1` in bare-metal or `10.10.1.100` for a virtual machine) using the following command:
-```
-ip a
-```
-**Please run application benchmarks over the private network that using the IP address range `10.10.1.*`**.
+2. Check the server's IP address with:
+    ```
+    ip a
+    ```
+    **Please run application benchmarks over the private network using the IP address range `10.10.1.*`**.
+
+3. We provide an automated script `run-all.sh` allows you to run all or specific benchmarks with optional settings.
+    ```
+    ./run-all.sh $SERVER_IP [-t $BENCHMARK] [-n REPTS] [-o $OUTPUT]
+    ```
+    - `$SERVER_IP`: Replace `$SERVER_IP` with the server's IP address (typically `10.10.1.1` in bare-metal or `10.10.1.100` for a virtual machine). 
+    - `-t $BENCHMARK`: Specify the benchmark to run (e.g., `hackbench`, `benchmark`, `kernbench`, `netperf`, `apache`, `memcached`). All benchmarks will be run by default.
+    - `-n $REPTS`: Define the number of repetitions for network benchmarks (i.e., `netperf`, `apache`, `memcached`).
+    - `-o OUTPUT`: Specify the output filename. The aggregated results are stored in the `results/` directory.  If not specified, results are saved as `benchmark_results.$NUM` where `$NUM` auto-increments with each run.
 
 #### 3.2.1 Running All Benchmarks
-To run all application benchmarks, use the following command:
+To run all benchmarks,
 ```
-./run-all.sh $SERVER_IP
+./run-all.sh $SERVER_IP [-n REPTS] [-o $OUTPUT]
 ```
-Replace `$SERVER_IP` with the server's IP address. The script executes all benchmarks (see Table 4 in the paper) and prints the raw data on the terminal. It takes approximately 10-15 minutes to complete.
+The command executes all benchmarks (see Table 4 in the paper) and prints the raw data on the terminal. The output includes results for each benchmark, along with an overall average. It takes approximately 10-15 minutes to complete.
 
-Results are stored in `results/benchmark_results.$NUM` where each run increments `$NUM` increments. For example, `benchmark_results.0` is the first run. The latest result corresponds to the highest `$NUM`. The output includes the results for each benchmark and an overall average. For example, 
+By default, network applications are conducted only a few times, which may introduce variability in the results due to fluctuating network conditions. The paper uses `-n 50` repetitions for network benchmarks to achieve consistent evaluation results, which will take longer to complete.
+
+To reproduce the evaluation result presented in the paper, you can follow this example:
 ```
-cat results/benchmark_results.0
+./run-all.sh 10.10.1.1 -n 50 -o test-all
+...
+cat results/test-all
 
 Hackbench Result (sec):
 11.121
@@ -328,41 +265,32 @@ Hackbench Result (sec):
 Average: 11.2317
 ... // Other benchmarks
 ```
-
-##### 3.2.1.1 Repetitions for Network Benchmarks (Optional)
-By default, network applications, such as `netperf`, `apache`,`memcached` are conducted only a few times, which may introduce variability in the results due to fluctuating network conditions.
-
-Alternatively, you can specify the number of repetitions. For example, use the following command:
-```
-./run-all.sh $SERVER_IP all 50
-```
-The evaluation in the paper uses `50` repetitions for network benchmarks, which will take longer to complete. Replace`50` with the desired number of repetitions and `all` with the specific benchmark you want to run (see [Running a Specific Benchmark](#322-running-a-specific-benchmark)).
+The evaluation will take approximately **1-2 hours** to complete, and it may take even longer when running on VMs.
 
 
 #### 3.2.2 Running a Specific Benchmark
 To run a specific application benchmark, use the following command:
 ```
-./run-all.sh $SERVER_IP $BENCHMARK [$REPTS]
+./run-all.sh $SERVER_IP -t $BENCHMARK [-n $REPTS] [-o $OUTPUT]
 ```
 Replace `$BENCHMARK` with the desired application workload (e.g., `apache`, `netperf`, `memcached`, `hackbench`, `kernbench`).
 
-The results are stored in `results/benchmark_results.$NUM`.
 
 #### 3.2.3 Collecting Raw Results (Optional)
 After running the benchmarks, to view the raw data from each application, use the following command:
 ```
 cat log/$BENCHMARK.$NUM
 ```
-This shows the unprocessed output from the benchmarks, stored in `log/$BENCHMARK.$NUM`
+This shows the unprocessed output from the benchmarks, stored in `log/$BENCHMARK.$NUM`. If an output filename was specified with `-o`, the individual results will be stored as `log/$BENCHMARK.$OUTPUT`
 
 #### 3.2.4 Normalized the Results against Baseline
-To compare results, run the following command:
+To aggregate the normalized results, run the following command:
 ```
 ./norm.sh results/$BASELINE results/$RESULT
 ```
 Replace `$BASELINE` with the baseline result file, e.g., `benchmark_results.0`, and `$RESULT` with the result you want to normalize against the baseline, e.g., `benchmark_results.1`.
 
-The normalized result will append to `results/$RESULT` and display on the terminal.
+The normalized result will append to `results/$RESULT` and displayed on the terminal.
 
 ## 4. Module Evaluation
 In this section, we provide instructions for evaluating kernel modules in **server machine** as detailed in Section 6 of the paper.
@@ -377,29 +305,16 @@ Currently, the following module signatures are installed in SECvma and can be in
 
 The `ipod` module is installed by default after booting.
 
-### 4.2 Install `crypto_virtio` Module and Collect the Result
-Running the following command in your **server machine**:
+### 4.2 Install and Uninstall Module and Collect the Result
+To install and uninstall the `xfs.ko` and `crypto_virtio` kernel modules, and collect the timing results, run the following script on your **server machine**:
 ```
-cd /lib/modules/4.18.0+/kernel
-insmod ./crypto/crypto_engine.ko
-time insmod ./drivers/crypto/virtio/virtio_crypto.ko
+cd /mydata/acsac24-paper240-ae/scripts/tests/
+./run-mod.sh
 ```
-### 4.3 Install `xfs` Module and Collect the Result
-Running the following command in your **server machine**:
-```
-cd /lib/modules/4.18.0+/kernel
-insmod ./lib/libcrc32c.ko
-time insmod ./fs/xfs/xfs.ko
-```
+The script will measure and aggregate the time to install and remove the `xfs.ko` and `crypto_virtio` kernel modules. The results will be printed directly on the terminal.
 
-### 4.4 Uninstall a Module and Collect the Result
-To uninstall a module, use the following command:
-```
-time rmmod $MOD_NAME
-```
-Replace `$MOD_NAME` with the name of the loaded module.
 
-### 4.5 Signing a Kernel Module
+### 4.3 Signing a Kernel Module
 To sign a kernel module, use the provided signing tool.
 
 Run the following commands to compile the tool:
@@ -412,9 +327,9 @@ After compiling, use the tool to generate and print the module's signature:
 cd ../tools/
 ./sign_mod $PATH_TO_MODULE
 ```
-Replace `$PATH_TO_MODULE` with the path to your module, e.g., `/lib/modules/4.18.0+/kernel/fs/xfs/xfs.ko`.
+Replace `$PATH_TO_MODULE` with the path to your module, e.g., `/lib/modules/$(uname -r)/kernel/fs/xfs/xfs.ko`.
 
-### 4.6 Install the signature in SECvma (Optional)
+### 4.4 Install the signature in SECvma (Optional)
 To install a signature in SECvma, follow these steps:
 1. Copy the **signature** generated by the [signing tool](#4.5-signing-a-kernel-module).
 2. Edit the SECvma source file at [`linux/arch/arm64/kint/HostModule.c`](https://github.com/ae-acsac24-44/acsac24-ae-linux/tree/master/arch/arm64/kint/HostModule.c).
@@ -425,12 +340,16 @@ To install a signature in SECvma, follow these steps:
 	      { "xfs", "bdcc8409cac0b4719a11063366c44c0ec03..." }
    };
     ```
-4. Recompile SECvma and reboot the system by following the steps in the [SECvma Configuration](#27-secvma-configuration).
+4. Recompile SECvma and reboot the system by following the steps in the [Bare-Metal SECvma](#263-bare-metal-secvma).
 5. After rebooting, you can install the newly added kernel module.
 
 ## 5. Software/Hardware Requirements
-The SECvma prototype included in this artifact currently supports Arm's m400 hardware. However, it can be extended to support other Arm hardware with virtualization extensions. To achieve this, developers will need to make two key adaptations:
-First, they must modify SECvma's boot process to accommodate different hardware specifications. This involves altering Linux's boot sequence to establish an EL2 runtime environment for SECvma's TCB (KPCore). For example, SECvma allocates memory pools for page tables during the boot process. Developers may need to adjust these allocations based on specific hardware requirements, such as available RAM size. Second, SECvma may require further modifications to meet various hardware specifications. For instance, while the current prototype supports Arm's Generic Interrupt Controller version 2 (GICv2), additional development would be necessary to incorporate support for GICv3 or other hardware-specific features.
+The SECvma prototype included in this artifact currently supports Arm's m400 hardware. Our evaluation was conducted on an HP Moonshot m400 server running Ubuntu 20.04 with Linux v4.18, with an 8-core 64-bit Armv8-A 2.4 GHz Applied Micro Atlas SoC, 64 GB of RAM, a 120 GB SATA3 SSD, and a Dual-port Mellanox ConnectX-3 10GbE NIC. 
+
+However, it can be extended to support other Arm hardware with virtualization extensions, as well as other Linux distributions. To achieve this, developers will need to make two key adaptations:
+1. First, they must modify SECvma's boot process to accommodate different hardware specifications. This involves altering Linux's boot sequence to establish an EL2 runtime environment for SECvma's TCB (KPCore). For example, SECvma allocates memory pools for page tables during the boot process. Developers may need to adjust these allocations based on specific hardware requirements, such as available RAM size. 
+2. Second, SECvma may require further modifications to meet various hardware specifications. For instance, while the current prototype supports Arm's Generic Interrupt Controller version 2 (GICv2), additional development would be necessary to incorporate support for GICv3 or other hardware-specific features.
+
 
 #### 
 [el1_kpt]: https://github.com/ae-acsac24-44/acsac24-ae-linux/tree/master/arch/arm64/kint/el1_kpt.c
