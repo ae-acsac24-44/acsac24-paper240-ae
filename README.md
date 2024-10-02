@@ -343,7 +343,7 @@ To install a signature in SECvma, follow these steps:
 	      { "xfs", "bdcc8409cac0b4719a11063366c44c0ec03..." }
    };
     ```
-4. Recompile SECvma and reboot the system by following the steps in the [Bare-Metal SECvma](#263-bare-metal-secvma).
+4. Recompile SECvma and reboot the system by following the steps in the [Bare-Metal SECvma](#223-bare-metal-secvma).
 5. After rebooting, you can install the newly added kernel module.
 
 ## 5. Software/Hardware Requirements
