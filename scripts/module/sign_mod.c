@@ -9,29 +9,6 @@
 u32 checklists[MAX_VERIFY_SECTION_SIZE];
 static u32 verify_entsize = 0;
 
-int foo(const char *filename, const void *buffer, size_t length)
-{
-	FILE *file = fopen(filename, "wb");
-
-	if (file == NULL)
-	{
-		perror("Failed to open the file for writing");
-		return 1;
-	}
-
-	size_t items_written = fwrite(buffer, 1, length, file);
-
-	if (items_written != length)
-	{
-		perror("Failed to write the entire buffer to the file");
-		fclose(file);
-		return 1; // Return an error code
-	}
-
-	fclose(file);
-	return 0; // Return 0 to indicate success
-}
-
 static void divide_section(struct mod_info *mod)
 {
 	static unsigned long const masks[][2] = {
